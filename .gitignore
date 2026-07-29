@@ -1,7 +1,38 @@
+# Environment & Secrets
 .env
+.env.local
+.streamlit/secrets.toml
+
+# Python cache
 __pycache__/
 *.pyc
-.streamlit/secrets.toml
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
 venv/
 .venv/
+env/
+
+# IDE & OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build & distribution
 *.egg-info/
+dist/
+build/
+*.egg
+
+# Jupyter notebooks (if any)
+.ipynb_checkpoints/
+
+# Logs & temporary files
+*.log
+*.tmp
