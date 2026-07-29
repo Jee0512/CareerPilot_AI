@@ -1,0 +1,29 @@
+Aditi Sharma
+Python Developer | Aspiring ML Engineer
+
+Summary:
+Detail-oriented developer with 2 years of experience building data-driven
+applications in Python. Comfortable with machine learning fundamentals,
+NLP, and building interactive tools with Streamlit.
+
+Skills:
+Python, Pandas, NumPy, Scikit-learn, Machine Learning, NLP, spaCy, NLTK,
+Sentence Transformers, SQL, Git, Streamlit, Flask, Data Analysis, Data Visualization
+
+Experience:
+Software Engineer, BrightData Labs (2023 - Present)
+- Built internal dashboards using Streamlit and Pandas for data QA
+- Developed a resume-matching prototype using Sentence Transformers and cosine similarity
+- Automated data cleaning pipelines in Python, reducing manual QA time by 40%
+
+Junior Developer, Nimbus Softworks (2021 - 2023)
+- Wrote REST APIs in Flask for an internal reporting tool
+- Used SQL for reporting queries against a PostgreSQL database
+- Collaborated with a small team using Git and Agile sprints
+
+Education:
+B.Tech in Computer Science, VIT University (2017 - 2021)
+
+Projects:
+- Sentiment Analysis Tool: NLP pipeline using spaCy + NLTK for social media text
+- Resume Matcher: Streamlit app matching resumes to job descriptions with embeddings
