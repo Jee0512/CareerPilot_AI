@@ -22,21 +22,12 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_step_track, render_page_header
 )
 
-
 render_step_track("job_description")
-section_heading("Job Description Source", "Provide the job description in one of three ways.")
+render_page_header("Job Description Source", "Provide the job description in one of three ways.")
 tab_paste, tab_upload, tab_url = st.tabs(["Paste Job Description", "Upload File", "Job URL"])
 with tab_paste:
     with st.container(border=True):
@@ -63,7 +54,7 @@ with tab_upload:
             )
 with tab_url:
     with st.container(border=True):
-        st.markdown('<p style="font-size:0.85rem;color:var(--ds-foreground-muted);margin-bottom:0.5rem;">Supported: LinkedIn, Indeed, Naukri, Company Careers pages</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:0.85rem;color:var(--cp-color-text-muted);margin-bottom:0.5rem;">Supported: LinkedIn, Indeed, Naukri, Company Careers pages</p>', unsafe_allow_html=True)
         url = st.text_input("Job posting URL", key="jd_url_input_2", placeholder="https://www.linkedin.com/jobs/view/...")
 
         if st.button("Fetch Job Description", key="btn_fetch_jd_url_2"):
@@ -78,7 +69,7 @@ with tab_url:
                     st.session_state["jd_text"] = fetched
                     st.success("Fetched successfully.")
                 except RuntimeError as exc:
-                    status_banner(f"{exc}<br><br>Automatic extraction isn't supported for every site (many require login). Try pasting the text manually instead.", "warn")
+                    st.warning(f"{exc}\n\nAutomatic extraction isn't supported for every site (many require login). Try pasting the text manually instead.")
 
         if st.session_state["jd_text"]:
             st.session_state["jd_text"] = st.text_area(

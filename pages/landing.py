@@ -22,21 +22,39 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
-)
+from ui.icons import icon_upload, icon_zap, icon_brain, icon_target, icon_logo
 
-from ui.icons import icon_upload, icon_zap, icon_brain, icon_target
+def render_local_navbar():
+    st.html(f"""
+    <div class="cp-ui">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: var(--cp-space-sm);">
+            <div style="display: flex; align-items: center; gap: var(--cp-space-sm); font-weight: 700; font-size: 1.25rem;">
+                {icon_logo(size=32)}
+                <span>Career<span style="color: var(--cp-color-primary);">Pilot</span></span>
+            </div>
+            <div style="display: flex; gap: var(--cp-space-xl); font-weight: 500; color: var(--cp-color-text-secondary); align-items: center;">
+                <span style="cursor: pointer; color: var(--cp-color-text);">Home</span>
+                <span style="cursor: pointer; transition: color 0.2s;">Features</span>
+                <span style="cursor: pointer; transition: color 0.2s;">Dashboard</span>
+                <span style="cursor: pointer; transition: color 0.2s;">Interview</span>
+            </div>
+            <div style="display: flex; gap: var(--cp-space-md); align-items: center;">
+                <button style="background: transparent; border: none; font-weight: 600; color: var(--cp-color-text); cursor: pointer; padding: 0.5rem 1rem;">Login</button>
+                <button style="background: var(--cp-color-primary); color: white; border: none; padding: 0.5rem 1.25rem; border-radius: var(--cp-radius-md); font-weight: 600; cursor: pointer; box-shadow: var(--cp-shadow-subtle);">Get Started</button>
+            </div>
+        </div>
+        <div style="height: 1px; background: var(--cp-color-border); margin-top: var(--cp-space-md); margin-bottom: var(--cp-space-2xl);"></div>
+    </div>
+    """)
 
-render_top_navbar()
+def render_local_privacy_note():
+    st.html(f"""
+    <div class="cp-ui" style="text-align: center; font-size: 0.8125rem; color: var(--cp-color-text-muted); margin-top: var(--cp-space-sm);">
+        🔒 Your data is private and never stored permanently.
+    </div>
+    """)
+
+render_local_navbar()
 hero_col1, hero_col2 = st.columns([1.1, 1], gap="large")
 
 with hero_col1:
@@ -58,20 +76,8 @@ with hero_col1:
     </div>
     """)
     
-    # Premium Upload Card
-    st.html(f"""
-    <div class="cp-ui">
-        <div class="cp-card-base cp-animate-in" style="border: 1px dashed var(--cp-color-border-strong); background: var(--cp-color-surface-muted); margin-bottom: var(--cp-space-sm);">
-            <div style="color: var(--cp-color-primary); display: flex; justify-content: center; margin-bottom: var(--cp-space-md);">
-                {icon_upload(size=48, stroke_width=1.5)}
-            </div>
-            <p class="cp-text-h3" style="margin-bottom: var(--cp-space-xs);">Upload your resume</p>
-            <p class="cp-text-muted">Drag & drop your PDF or DOCX</p>
-        </div>
-    </div>
-    """)
-    
-    # Inline uploader (Native Streamlit)
+    # Inline uploader (Native Streamlit with Premium CSS)
+    st.html('<div class="cp-ui"><h3 class="cp-text-h2" style="margin-bottom: var(--cp-space-sm);">Upload your resume</h3></div>')
     uploaded_landing = st.file_uploader("Upload Resume", type=["pdf", "docx"], key="landing_uploader", label_visibility="collapsed")
     if uploaded_landing is not None:
         try:
@@ -89,7 +95,7 @@ with hero_col1:
         except RuntimeError as exc:
             st.error(str(exc))
     
-    privacy_note()
+    render_local_privacy_note()
 
 with hero_col2:
     st.markdown('<div style="margin-top: 3rem;"></div>', unsafe_allow_html=True)

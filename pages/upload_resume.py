@@ -22,21 +22,12 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_step_track, render_page_header, render_badge_list
 )
 
-
 render_step_track("upload_resume")
-section_heading("Upload Your Resume", "Start by uploading your resume in PDF or DOCX format.")
+render_page_header("Upload Your Resume", "Start by uploading your resume in PDF or DOCX format.")
 with st.container(border=True):
     uploaded = st.file_uploader("Upload Resume", type=["pdf", "docx"], key="resume_uploader_2")
     if uploaded is not None:
@@ -54,7 +45,7 @@ with st.container(border=True):
             if not is_pdf:
                 st.caption("Note: layout-preserving optimization (exact design edit) is only available for PDF uploads.")
             if skills:
-                badge_list(skills, "good")
+                render_badge_list(skills, "good")
         except RuntimeError as exc:
             st.error(str(exc))
     elif st.session_state["resume_text"]:

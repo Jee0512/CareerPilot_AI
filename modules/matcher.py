@@ -10,6 +10,7 @@ that gives a more reliable score than either alone).
 """
 
 import streamlit as st
+from sentence_transformers import SentenceTransformer
 
 from modules.resume_parser import extract_skills
 
@@ -17,7 +18,6 @@ from modules.resume_parser import extract_skills
 @st.cache_resource(show_spinner=False)
 def _load_embedding_model():
     """Small, fast, good-quality embedding model. Cached once per session."""
-    from sentence_transformers import SentenceTransformer
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 

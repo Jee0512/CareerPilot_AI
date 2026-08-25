@@ -106,7 +106,6 @@ from modules.ui_components import (
 
 
 
-@st.cache_data
 def get_custom_css():
     # Load legacy CSS
     legacy_css_path = Path(__file__).parent / "assets" / "style.css"

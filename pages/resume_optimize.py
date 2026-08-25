@@ -22,21 +22,36 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_step_track, render_page_header,
+    render_section_title, render_badge_list
 )
 
+def render_local_score_comparison(prev_score: float, new_score: float):
+    diff = new_score - prev_score
+    diff_sign = "+" if diff > 0 else ""
+    diff_color = "var(--cp-color-success)" if diff > 0 else "var(--cp-color-danger)" if diff < 0 else "var(--cp-color-text-secondary)"
+    
+    html = f'''
+    <div class="cp-ui" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--cp-space-md); text-align:center; padding:var(--cp-space-lg); background:var(--cp-color-surface); border:1px solid var(--cp-color-border); border-radius:var(--cp-radius-lg); margin-bottom:var(--cp-space-lg);">
+        <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cp-color-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Original Score</div>
+            <div style="font-size:2rem; font-weight:800; color:var(--cp-color-text);">{prev_score:.0f}%</div>
+        </div>
+        <div style="border-left:1px solid var(--cp-color-border); border-right:1px solid var(--cp-color-border);">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cp-color-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Optimized Score</div>
+            <div style="font-size:2rem; font-weight:800; color:var(--cp-color-primary);">{new_score:.0f}%</div>
+        </div>
+        <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cp-color-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Improvement</div>
+            <div style="font-size:2rem; font-weight:800; color:{diff_color};">{diff_sign}{diff:.0f}%</div>
+        </div>
+    </div>
+    '''
+    st.html(html)
 
 render_step_track("resume_optimize")
-section_heading("Optimize & Compare")
+render_page_header("Optimize & Compare")
 result = st.session_state["match_result"]
 if result is None:
     st.warning("Run a resume analysis first.")
@@ -86,38 +101,44 @@ if st.session_state["optimized_pdf_bytes"] is None:
             st.switch_page("pages/results.py")
 st.stop()
 # Step 2: Show Before vs After comparison (MUST appear before download)
-section_heading("Before vs After Comparison", "Review the changes the AI made to your resume, section by section.")
+render_section_title("Before vs After Comparison")
+st.markdown("Review the changes the AI made to your resume, section by section.")
+
 # Two-panel diff view
 section_diffs = st.session_state.get("section_diffs")
 if section_diffs:
     for sec in section_diffs:
-        section_heading("{sec['name']}")
+        render_section_title(f"{sec['name']}")
         if sec["changed"] and sec["diff_html"]:
-            compare_grid(sec['diff_html'], sec['diff_html'])
+            cols = st.columns(2)
+            with cols[0]:
+                st.markdown("**Original Content** (Red = Removed)")
+                st.html(f"<div class='cp-ui' style='font-size:0.875rem;line-height:1.6;'>{sec['diff_html']}</div>")
+            with cols[1]:
+                st.markdown("**Optimized Content** (Green = Added)")
+                st.html(f"<div class='cp-ui' style='font-size:0.875rem;line-height:1.6;'>{sec['diff_html']}</div>")
         else:
             st.caption("No changes in this section.")
 else:
     # Fallback: show the full diff
     with st.container(border=True):
-        st.markdown(f"""
-        <div class="cp-compare-original">
-            <div class="cp-compare-label">Original Content (Red = Removed)</div>
-            <div style="font-size:0.85rem;line-height:1.5;">{st.session_state['resume_diff_html']}</div>
-        </div>
-        <div class="cp-compare-optimized">
-            <div class="cp-compare-label">Optimized Content (Green = Added)</div>
-            <div style="font-size:0.85rem;line-height:1.5;">{st.session_state['resume_diff_html']}</div>
-        </div>
-        """, unsafe_allow_html=True)
+        cols = st.columns(2)
+        with cols[0]:
+            st.markdown("**Original Content** (Red = Removed)")
+            st.html(f"<div class='cp-ui' style='font-size:0.85rem;line-height:1.5;'>{st.session_state['resume_diff_html']}</div>")
+        with cols[1]:
+            st.markdown("**Optimized Content** (Green = Added)")
+            st.html(f"<div class='cp-ui' style='font-size:0.85rem;line-height:1.5;'>{st.session_state['resume_diff_html']}</div>")
+            
 # Step 3: PDF Preview
-divider()
-section_title("PDF Preview")
+st.divider()
+render_section_title("PDF Preview")
 b64_pdf = base64.b64encode(st.session_state["optimized_pdf_bytes"]).decode()
 st.markdown(f'<iframe src="data:application/pdf;base64,{b64_pdf}" width="100%" height="500" style="border-radius:12px;border:1px solid #E5E7EB;"></iframe>', unsafe_allow_html=True)
 # Step 4: Download options (AFTER comparison)
-divider()
+st.divider()
 with st.container(border=True):
-    section_title("Download Optimized Resume", size="1.25rem")
+    render_section_title("Download Optimized Resume")
     dcol1, dcol2 = st.columns(2)
     with dcol1:
         st.download_button("Download as PDF (design preserved)", data=st.session_state["optimized_pdf_bytes"],
@@ -128,7 +149,7 @@ with st.container(border=True):
     st.caption("The PDF preserves your exact original design. The DOCX is a clean text re-export.")
 # Step 5: Recalculate score - IMPROVED with score comparison
 with st.container(border=True):
-    section_title("Recalculate Match Score", size="1.25rem")
+    render_section_title("Recalculate Match Score")
     if st.button("Recalculate Score", key="btn_recalculate"):
         try:
             with st.spinner("Recalculating..."):
@@ -141,20 +162,20 @@ with st.container(border=True):
     if st.session_state["recalculated_match"]:
         recalc = st.session_state["recalculated_match"]
         orig_score = st.session_state["match_result"]["match_score"] if st.session_state["match_result"] else 0
-        # Premium score comparison dashboard
-        score_comparison(orig_score, recalc['match_score'])
-        # Matched & Missing skills badges
-        st.markdown("<div style='margin:0.75rem 0;'>", unsafe_allow_html=True)
+        render_local_score_comparison(orig_score, recalc['match_score'])
         if recalc["matched_skills"]:
-            labeled_badges("Γ£à Matched Skills:", recalc["matched_skills"], "good")
+            st.markdown("**✅ Matched Skills:**")
+            st.info(", ".join(recalc["matched_skills"]))
         if recalc["missing_skills"]:
-            st.markdown("<br>", unsafe_allow_html=True)
-            labeled_badges("Γ¥î Still Missing:", recalc["missing_skills"], "bad")
-    if recalc["match_score"] >= ELIGIBILITY_THRESHOLD:
-        status_banner("≡ƒÄë Your optimized resume now meets the assessment threshold!", "good")
-    else:
-        status_banner("Your resume has improved! Additional preparation is recommended before the assessment.", "warn")
-card_close()
+            st.markdown("**❌ Still Missing:**")
+            st.warning(", ".join(recalc["missing_skills"]))
+    
+    if st.session_state.get("recalculated_match"):
+        if st.session_state["recalculated_match"]["match_score"] >= ELIGIBILITY_THRESHOLD:
+            st.success("🎉 Your optimized resume now meets the assessment threshold!")
+        else:
+            st.warning("Your resume has improved! Additional preparation is recommended.")
+
 col1, col2 = st.columns(2)
 with col1:
     if st.button("Back", use_container_width=True, key="btn_back_optimize"):

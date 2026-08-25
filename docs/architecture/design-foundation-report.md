@@ -19,5 +19,12 @@ To establish the new premium white/light visual design system and migrate the La
 - [x] Landing page is safely isolated in its own `.cp-ui` DOM tree.
 - [x] Session state flow is preserved.
 
+## Landing Isolation Completion
+Following an architecture audit (Phase 4.5), we identified and removed residual legacy dependencies from `pages/landing.py`:
+- **Dependencies Removed**: `modules/ui_components.py` (specifically `render_top_navbar` and `privacy_note`) which previously tied the landing page to legacy CSS.
+- **What Remains Legacy**: `assets/style.css` and `modules/ui_components.py` remain intentionally preserved for the rest of the unmigrated pages. 
+- **Global CSS**: `assets/style.css` remains globally loaded in `app.py` because pages like `upload_resume.py` and `results.py` still strictly depend on it.
+- **Component Strategy**: No generic UI component library (like `ui/components.py`) was introduced yet. Local helpers were used in `landing.py` instead. We will establish a reusable component architecture only after several pages have been migrated and actual patterns of repetition emerge, adhering to the principle of avoiding premature abstraction.
+
 ## Next Steps
 Following the architecture plan, subsequent phases will migrate the remaining pages (`upload_resume.py`, `results.py`, etc.) one-by-one to the `.cp-ui` namespace. Once all pages are migrated and verified, the legacy `assets/style.css` and `ui_components.py` string templates can be safely deprecated and removed.

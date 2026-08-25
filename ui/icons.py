@@ -43,3 +43,12 @@ def icon_target(size: int = 24, stroke_width: float = 1.5) -> str:
         <circle cx="12" cy="12" r="2"/>
     </svg>
     '''
+
+def icon_logo(size: int = 32) -> str:
+    return f'''
+    <svg width="{size}" height="{size}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="var(--cp-color-primary)"/>
+        <circle cx="16" cy="16" r="8" fill="white" opacity="0.9"/>
+        <path d="M16 10 L20 16 L16 22 L12 16 Z" fill="var(--cp-color-primary)"/>
+    </svg>
+    '''

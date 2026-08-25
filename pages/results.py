@@ -22,39 +22,32 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_step_track, render_page_header,
+    render_circular_score, render_section_title,
+    render_badge_list
 )
 
-
 render_step_track("results")
-section_heading("Results Dashboard")
+render_page_header("Results Dashboard")
 result = st.session_state["match_result"]
 if result is None:
     st.warning("No analysis yet ΓÇö go back and provide a job description first.")
     if st.button("Back", key="btn_back_no_result"):
         st.switch_page("pages/job_description.py")
-st.stop()
+    st.stop()
 score = result["match_score"]
 is_eligible = score >= ELIGIBILITY_THRESHOLD
 # Score + eligibility row
 score_col1, score_col2 = st.columns([1, 1.5])
 with score_col1:
     with st.container(border=True):
-        st.markdown(circular_score(score, "Resume Match Score"), unsafe_allow_html=True)
+        render_circular_score(score, "Resume Match Score")
 with score_col2:
     if is_eligible:
-        status_banner("Eligible for Interview! Your resume meets the 75%+ match threshold for this role.", "good")
+        st.success("Eligible for Interview! Your resume meets the 75%+ match threshold for this role.")
     else:
-        status_banner("Not yet eligible for interview (below 75%). Optimize your resume or explore better-fitting roles below.", "bad")
+        st.error("Not yet eligible for interview (below 75%). Optimize your resume or explore better-fitting roles below.")
     with st.container(border=True):
         metric_row = st.columns(3)
         with metric_row[0]:
@@ -67,23 +60,23 @@ with score_col2:
 col1, col2 = st.columns(2)
 with col1:
     with st.container(border=True):
-        section_title("Matching Skills")
+        render_section_title("Matching Skills")
         st.progress(min(1.0, result["matched_pct"] / 100))
         if result["matched_skills"]:
-            badge_list(result["matched_skills"], "good")
+            render_badge_list(result["matched_skills"], "good")
         else:
             st.caption("No overlapping skills detected.")
 with col2:
     with st.container(border=True):
-        section_title("Missing Skills")
+        render_section_title("Missing Skills")
         st.progress(min(1.0, result["missing_pct"] / 100))
         if result["missing_skills"]:
-            badge_list(result["missing_skills"], "bad")
+            render_badge_list(result["missing_skills"], "bad")
         else:
             st.caption("No missing skills detected!")
 # AI Resume Debate
 with st.container(border=True):
-    section_title("AI Resume Debate")
+    render_section_title("AI Resume Debate")
     if st.session_state["resume_debate"] is None:
         if st.button("Generate Resume Debate", key="btn_gen_debate"):
             try:
@@ -104,8 +97,8 @@ with st.container(border=True):
             for r in debate.get("rejection_reasons", []):
                 st.markdown(f"- {r}")
 # Next steps
-divider()
-section_heading("What would you like to do next?")
+st.divider()
+render_page_header("What would you like to do next?")
 opt1, opt2 = st.columns(2)
 with opt1:
     with st.container(border=True):

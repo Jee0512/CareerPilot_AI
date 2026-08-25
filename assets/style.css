@@ -83,8 +83,8 @@
 
 /* ---------- Global Overrides ---------- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-* { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
-
+/* Removed global * font-family override as it breaks Streamlit's internal icon fonts */
+html, body, .stApp { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 body, .stApp {
     background: var(--cp-bg) !important;
     background-image: none !important;
@@ -112,7 +112,7 @@ h1 { color: var(--cp-text); font-weight: 700; letter-spacing: -0.022em; font-siz
 h2 { color: var(--cp-text); font-weight: 700; letter-spacing: -0.018em; font-size: 1.5rem; line-height: 1.25; }
 h3 { color: var(--cp-text); font-weight: 600; letter-spacing: -0.015em; font-size: 1.25rem; line-height: 1.3; }
 h4 { color: var(--cp-text); font-weight: 600; letter-spacing: -0.01em; font-size: 1.0625rem; line-height: 1.35; }
-p, li, .stCaption, label, span { color: var(--cp-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
+p, li, .stCaption, label { color: var(--cp-text-secondary); font-size: 0.9375rem; line-height: 1.6; }
 hr { border-top: 1px solid var(--cp-border); margin: var(--space-6) 0; }
 
 /* Native Streamlit Overrides matching new tokens */
@@ -139,14 +139,23 @@ div.stButton > button[disabled] { opacity: 0.5; cursor: not-allowed; transform: 
 .stTextInput > div > div > input:hover, .stTextArea > div > div > textarea:hover { border-color: var(--cp-border-hover) !important; }
 .stTextInput > div > div > input:focus, .stTextArea > div > div > textarea:focus { border-color: var(--cp-primary) !important; box-shadow: 0 0 0 3px var(--cp-primary-ring) !important; }
 
-/* File Uploader */
+/* File Uploader - Premium Design System Overrides */
 [data-testid="stFileUploader"] {
-    border-radius: 16px !important; border: 2px dashed var(--cp-border) !important;
-    background: var(--cp-bg) !important; padding: 32px !important; transition: all 0.25s ease !important;
+    border-radius: var(--cp-radius-xl) !important; 
+    border: 2px dashed var(--cp-color-border-strong) !important;
+    background: var(--cp-color-surface-muted) !important; 
+    padding: var(--cp-space-xl) !important; 
+    transition: all 0.25s ease !important;
 }
-[data-testid="stFileUploader"]:hover { border-color: var(--cp-primary) !important; background: var(--cp-primary-light) !important; }
-
-/* Right Sidebar native overrides */
+[data-testid="stFileUploader"]:hover { 
+    border-color: var(--cp-color-primary) !important; 
+    background: var(--cp-color-surface) !important; 
+}
+[data-testid="stFileUploaderDropzone"] {
+    /* Ensure the internal dropzone doesn't add double borders */
+    border: none !important;
+    background: transparent !important;
+}
 [data-testid="stSidebar"] {
     background: var(--cp-bg-secondary) !important;
     border-left: 1px solid var(--cp-border);
