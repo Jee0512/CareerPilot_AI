@@ -22,20 +22,12 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_page_header, render_job_card
 )
 
 
-section_heading("≡ƒÆ╝ Recommended Jobs")
+render_page_header("💼 Recommended Jobs")
 st.caption("Roles that better match your current skills and optimized resume.")
 if st.session_state["career_readiness_jobs"] is None:
     try:
@@ -52,20 +44,7 @@ if st.session_state["career_readiness_jobs"] is None:
             st.switch_page("pages/career_readiness.py")
 st.stop()
 for job in st.session_state["career_readiness_jobs"]:
-    with st.container(border=True):
-        title_company = job.get("job_title", "Role")
-        if job.get("company"):
-            title_company += f" at {job['company']}"
-        section_heading("{title_company}")
-        st.markdown(f"**Estimated Match:** {job.get('estimated_match_pct', '-')}%")
-        st.progress(min(1.0, (job.get("estimated_match_pct") or 0) / 100))
-        st.caption(job.get("reason", ""))
-        st.markdown(" ".join(f"<span class='cp-badge cp-badge-good'>{s}</span>" for s in job.get("skills_present", [])), unsafe_allow_html=True)
-        st.markdown(" ".join(f"<span class='cp-badge cp-badge-bad'>{s}</span>" for s in job.get("skills_missing", [])), unsafe_allow_html=True)
-        urls = job.get("apply_urls", {})
-        for site in ("LinkedIn", "Indeed", "Naukri", "Company Careers"):
-            if site in urls:
-                st.link_button(f"Apply on {site}", urls[site], use_container_width=True)
+    render_job_card(job, apply_key="apply_urls")
 col1, col2 = st.columns(2)
 with col1:
     if st.button("Back", use_container_width=True, key="btn_crj_back"):

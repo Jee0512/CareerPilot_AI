@@ -52,8 +52,10 @@ with st.container(border=True):
         st.info("A resume is already loaded. Upload a new file to replace it.")
 col1, col2 = st.columns(2)
 with col1:
-    if st.button("Back", use_container_width=True, key="btn_back_upload"):
-        st.switch_page("pages/landing.py")
+    if st.button("Reset", use_container_width=True, key="btn_reset_upload"):
+        st.session_state["resume_text"] = None
+        st.session_state["resume_skills"] = []
+        st.rerun()
 with col2:
     can_continue = st.session_state["resume_text"] is not None
     if st.button("Continue", use_container_width=True, type="primary", disabled=not can_continue, key="btn_continue_upload"):

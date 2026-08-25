@@ -22,20 +22,56 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_step_track, render_page_header,
+    render_section_title, render_badge_list, render_circular_score, render_job_card
 )
 
+def render_local_success_gradient(emoji: str, title: str, message: str):
+    """Render text with a success gradient in the new foundation."""
+    st.html(f'''
+    <div class="cp-ui" style="background: linear-gradient(135deg, var(--cp-color-success-bg) 0%, rgba(16, 185, 129, 0.05) 100%); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--cp-radius-lg); padding: var(--cp-space-xl); text-align: center; margin-bottom: var(--cp-space-xl);">
+        <div style="font-size: 3rem; margin-bottom: var(--cp-space-md);">{emoji}</div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--cp-color-success); margin-bottom: var(--cp-space-sm);">{title}</h2>
+        <p style="font-size: 1rem; font-weight: 500; color: rgba(16, 185, 129, 0.8); line-height: 1.5;">{message}</p>
+    </div>
+    ''')
 
-section_heading("AI Career Readiness Decision")
+def render_local_mentor_card(emoji: str, title: str, message: str):
+    """Render an AI Mentor tip card."""
+    st.html(f'''
+    <div class="cp-ui" style="background: linear-gradient(135deg, var(--cp-color-info-bg) 0%, rgba(59, 130, 246, 0.05) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: var(--cp-radius-lg); padding: var(--cp-space-xl); text-align: center; margin-bottom: var(--cp-space-xl);">
+        <div style="font-size: 3rem; margin-bottom: var(--cp-space-md);">{emoji}</div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--cp-color-info); margin-bottom: var(--cp-space-sm);">{title}</h2>
+        <p style="font-size: 1rem; font-weight: 500; color: rgba(59, 130, 246, 0.8); line-height: 1.5;">{message}</p>
+    </div>
+    ''')
+
+def render_local_decision_card(icon: str, title: str, description: str):
+    """Render a card for career decisions using .cp-ui."""
+    st.html(f'''
+    <div class="cp-ui" style="background: var(--cp-color-surface); border: 1px solid var(--cp-color-border); border-radius: var(--cp-radius-lg); padding: var(--cp-space-xl); text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; box-shadow: var(--cp-shadow-subtle); transition: transform 0.2s, box-shadow 0.2s;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--cp-color-primary-light); color: var(--cp-color-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: var(--cp-space-md);">
+            {icon}
+        </div>
+        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--cp-color-text); margin-bottom: var(--cp-space-sm);">{title}</h3>
+        <p style="font-size: 0.875rem; color: var(--cp-color-text-secondary); line-height: 1.5; margin-bottom: 0;">{description}</p>
+    </div>
+    ''')
+
+def render_local_metric_value(label: str, value: str, color_hex: str = ""):
+    """Render a single metric."""
+    color_attr = f"color: {color_hex};" if color_hex else "color: var(--cp-color-text);"
+    st.html(f'''
+    <div class="cp-ui" style="background: var(--cp-color-surface-muted); border: 1px solid var(--cp-color-border); border-radius: var(--cp-radius-md); padding: var(--cp-space-md); text-align: center;">
+        <div style="font-size: 2rem; font-weight: 800; {color_attr} margin-bottom: 4px;">{value}</div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--cp-color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">{label}</div>
+    </div>
+    ''')
+
+
+
+render_page_header("AI Career Readiness Decision")
 recalc = st.session_state["recalculated_match"]
 if recalc is None:
     st.warning("Please run the Resume Optimization and Recalculate Score first.")
@@ -45,16 +81,18 @@ st.stop()
 optimized_score = recalc["match_score"]
 missing_skills = recalc["missing_skills"]
 if optimized_score >= ELIGIBILITY_THRESHOLD:
-    # CASE 1: Score >= 75 ΓÇö Premium Success Card
-    success_gradient("≡ƒÄë", "Congratulations!", "Your optimized resume demonstrates strong alignment with the selected job description.<br>You are now ready for the assessment.")
+    # CASE 1: Score >= 75 — Premium Success Card
+    render_local_success_gradient("🎉", "Congratulations!", "Your optimized resume demonstrates strong alignment with the selected job description.<br>You are now ready for the assessment.")
     # Two action cards
     c1, c2 = st.columns(2)
     with c1:
-        decision_card("≡ƒôï", "Take AI Assessment", "Evaluate your readiness using an AI-generated assessment personalized to your resume and target role.", "#EEF4FF", "cp-animate-in-left")
+        render_local_decision_card("📋", "Take AI Assessment", "Evaluate your readiness using an AI-generated assessment personalized to your resume and target role.")
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button("Take AI Assessment", type="primary", use_container_width=True, key="btn_cr_assessment"):
             st.switch_page("pages/interview.py")
     with c2:
-        decision_card("≡ƒÆ╝", "Find Better Matching Jobs", "Explore additional opportunities that match your optimized resume.", "#FEF3C7", "cp-animate-in-right")
+        render_local_decision_card("💼", "Find Better Matching Jobs", "Explore additional opportunities that match your optimized resume.")
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button("Find Better Jobs", type="secondary", use_container_width=True, key="btn_cr_jobs"):
             if st.session_state["career_readiness_jobs"] is None:
                 try:
@@ -70,12 +108,13 @@ if optimized_score >= ELIGIBILITY_THRESHOLD:
             else:
                 st.switch_page("pages/career_readiness_jobs.py")
 else:
-    # CASE 2: Score < 75 ΓÇö AI Mentor Card (never display rejection/negative)
-    mentor_card("≡ƒº¡", "Your resume has improved significantly", "But additional preparation is recommended before applying for this role.<br>Based on your resume and the selected job description, we have prepared two personalized paths to help you become interview-ready.")
+    # CASE 2: Score < 75 — AI Mentor Card (never display rejection/negative)
+    render_local_mentor_card("🧐", "Your resume has improved significantly", "But additional preparation is recommended before applying for this role.<br>Based on your resume and the selected job description, we have prepared two personalized paths to help you become interview-ready.")
     # Two action cards
     c1, c2 = st.columns(2)
     with c1:
-        decision_card("≡ƒÄ»", "Improve My Skills", "Get a personalized 7-day learning plan and AI mini project tailored to close your skill gaps.", "#EDE9FE", "cp-animate-in-left")
+        render_local_decision_card("🎯", "Improve My Skills", "Get a personalized 7-day learning plan and AI mini project tailored to close your skill gaps.")
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button("Generate My Learning Plan", type="primary", use_container_width=True, key="btn_cr_improve"):
             try:
                 with st.spinner("Generating your personalized 7-day learning plan..."):
@@ -97,7 +136,8 @@ else:
             except RuntimeError as exc:
                 st.error(str(exc))
     with c2:
-        decision_card("≡ƒÆ╝", "Find Better Matching Jobs", "Discover roles that better match your current skills rather than the original target role.", "#FEF3C7", "cp-animate-in-right")
+        render_local_decision_card("💼", "Find Better Matching Jobs", "Discover roles that better match your current skills rather than the original target role.")
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button("Find Better Jobs", type="secondary", use_container_width=True, key="btn_cr_improve_jobs"):
             if st.session_state["career_readiness_jobs"] is None:
                 try:
@@ -114,35 +154,36 @@ else:
                 st.switch_page("pages/career_readiness_jobs.py")
 # Show learning plan and mini project if generated
 if st.session_state["learning_plan_7day"]:
-    divider()
-    section_heading("≡ƒôÜ Your 7-Day Personalized Learning Plan")
+    st.divider()
+    render_section_title("📚 Your 7-Day Personalized Learning Plan")
     with st.container(border=True):
         st.markdown(st.session_state["learning_plan_7day"])
     # Mini Project
     project = st.session_state["ai_mini_project"]
     if project:
-        section_heading("≡ƒÜÇ AI Mini Project Recommendation")
+        render_section_title("🚀 AI Mini Project Recommendation")
         with st.container(border=True):
-            section_heading("{project.get('title', 'AI Project')}")
-            st.caption("{project.get('objective', '')}")
+            render_section_title(f"{project.get('title', 'AI Project')}")
+            st.caption(f"{project.get('objective', '')}")
             meta = st.columns(3)
             with meta[0]:
-                metric_value("Difficulty", project.get('difficulty', 'Intermediate'))
+                render_local_metric_value("Difficulty", project.get('difficulty', 'Intermediate'))
             with meta[1]:
-                metric_value("Duration", project.get('estimated_duration', '1-2 weeks'))
+                render_local_metric_value("Duration", project.get('estimated_duration', '1-2 weeks'))
             with meta[2]:
-                metric_value("Skills Learned", str(len(project.get('skills_learned', []))))
-            section_heading("Features")
+                render_local_metric_value("Skills Learned", str(len(project.get('skills_learned', []))))
+            render_section_title("Features", size="1rem")
             for feat in project.get("features", []):
                 st.markdown(f"- {feat}")
-            section_heading("Technologies")
-            badge_list(project.get("technologies", []), "info")
-            section_heading("Skills You Will Develop")
-            badge_list(project.get("skills_learned", []), "purple")
-            st.markdown(f"<p style='color:#6B7280;font-size:0.9rem;margin-top:0.75rem;'><strong>Expected Outcome:</strong> {project.get('expected_outcome', '')}</p>", unsafe_allow_html=True)
+            render_section_title("Technologies", size="1rem")
+            render_badge_list(project.get("technologies", []), "info")
+            render_section_title("Skills You Will Develop", size="1rem")
+            render_badge_list(project.get("skills_learned", []), "purple")
+            st.markdown(f"<p style='color:var(--cp-color-text-muted);font-size:0.9rem;margin-top:0.75rem;'><strong>Expected Outcome:</strong> {project.get('expected_outcome', '')}</p>", unsafe_allow_html=True)
     # Career Progress Tracker - integrated into Improve My Skills workflow
-    divider()
-    section_heading("≡ƒôê Career Progress Tracker", "Upload your improved resume after completing the learning plan to see your progress.")
+    st.divider()
+    render_section_title("📈 Career Progress Tracker")
+    st.markdown("Upload your improved resume after completing the learning plan to see your progress.")
     improved_upload = st.file_uploader("Upload Improved Resume", type=["pdf", "docx"], key="improved_resume_uploader")
     if improved_upload is not None:
         try:
@@ -189,36 +230,39 @@ if st.session_state["learning_plan_7day"]:
         improvement_pct = round(imp["match_score"] - optimized_score, 1)
         # Premium progress dashboard
         with st.container(border=True):
-            section_title("Progress Dashboard")
+            render_section_title("Progress Dashboard")
             dash_cols = st.columns(4)
             with dash_cols[0]:
-                metric_value("Previous Score", f"{optimized_score}%", "#EF4444")
+                render_local_metric_value("Previous Score", f"{optimized_score}%", "var(--cp-color-danger)")
             with dash_cols[1]:
-                metric_value("Current Score", f"{imp['match_score']}%", "#10B981")
+                render_local_metric_value("Current Score", f"{imp['match_score']}%", "var(--cp-color-success)")
             with dash_cols[2]:
                 sign = "+" if improvement_pct >= 0 else ""
-                clr = "#10B981" if improvement_pct >= 0 else "#EF4444"
-                metric_value("Improvement", f"{sign}{improvement_pct}%", clr)
+                clr = "var(--cp-color-success)" if improvement_pct >= 0 else "var(--cp-color-danger)"
+                render_local_metric_value("Improvement", f"{sign}{improvement_pct}%", clr)
             with dash_cols[3]:
-                metric_value("New Skills", str(len(new_skills_added)), "#2563EB")
+                render_local_metric_value("New Skills", str(len(new_skills_added)), "var(--cp-color-info)")
             # Skills breakdown
             sk_col1, sk_col2, sk_col3 = st.columns(3)
             with sk_col1:
                 if new_skills_added:
-                    st.markdown("**≡ƒåò New Skills Added:** " + " ".join(f"<span class='cp-badge cp-badge-good'>{s}</span>" for s in new_skills_added), unsafe_allow_html=True)
+                    st.markdown("**🆕 New Skills Added:**")
+                    render_badge_list(new_skills_added, "good")
             with sk_col2:
                 if skills_improved:
-                    st.markdown("**Γ£à Improved Skills:** " + " ".join(f"<span class='cp-badge cp-badge-info'>{s}</span>" for s in skills_improved), unsafe_allow_html=True)
+                    st.markdown("**✅ Improved Skills:**")
+                    render_badge_list(skills_improved, "info")
             with sk_col3:
                 if remaining_missing:
-                    st.markdown("**Γ¥î Remaining Missing:** " + " ".join(f"<span class='cp-badge cp-badge-bad'>{s}</span>" for s in remaining_missing), unsafe_allow_html=True)
+                    st.markdown("**❌ Remaining Missing:**")
+                    render_badge_list(remaining_missing, "bad")
             # AI Summary
             if st.session_state["improvement_summary"]:
-                st.markdown(f"<div style='background:#F8FAFC;border-radius:12px;padding:1rem;margin-top:0.75rem;font-size:0.9rem;color:#374151;'><strong>≡ƒñû AI Summary:</strong> {st.session_state['improvement_summary']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='cp-ui' style='background:var(--cp-color-surface-muted);border:1px solid var(--cp-color-border);border-radius:var(--cp-radius-md);padding:var(--cp-space-md);margin-top:var(--cp-space-md);font-size:0.9rem;color:var(--cp-color-text-secondary);'><strong>🤖 AI Summary:</strong> {st.session_state['improvement_summary']}</div>", unsafe_allow_html=True)
         # Progress history chart
         if len(st.session_state["progress_history"]) > 0:
             with st.container(border=True):
-                section_heading("Progress History")
+                render_section_title("Progress History")
                 hist = st.session_state["progress_history"]
                 chart_data = {
                     "Attempt": [h["attempt"] for h in hist],
@@ -227,13 +271,13 @@ if st.session_state["learning_plan_7day"]:
                 st.line_chart(chart_data, x="Attempt", y="Score", height=200)
         # Check if ready for assessment
         if imp["match_score"] >= ELIGIBILITY_THRESHOLD:
-            success_gradient("≡ƒÄë", "Congratulations!", f"You are now interview-ready! Your resume score of {imp['match_score']}% meets the assessment threshold.")
+            render_local_success_gradient("🎉", "Congratulations!", f"You are now interview-ready! Your resume score of {imp['match_score']}% meets the assessment threshold.")
             if st.button("Unlock AI Assessment", type="primary", use_container_width=True, key="btn_unlock_assessment"):
                 st.switch_page("pages/interview.py")
         else:
-            status_banner("Keep going! You're making great progress. Continue with the learning plan and try uploading another improved resume.", "warn")
+            st.warning("Keep going! You're making great progress. Continue with the learning plan and try uploading another improved resume.")
             # Regenerate learning plan + mini project based on remaining missing skills
-            if st.button("Regenerate Learning Plan for Remaining Skills", type="secondary", key="btn_regenerate_plan"):
+            if st.button("Regenerate Learning Plan", type="secondary", key="btn_regenerate_plan"):
                 try:
                     with st.spinner("Regenerating personalized learning plan..."):
                         new_plan = generate_7day_learning_plan(
@@ -260,12 +304,12 @@ if st.session_state["learning_plan_7day"]:
                     st.error(str(exc))
 # Show career readiness jobs if generated
 if st.session_state["career_readiness_jobs"] and st.session_state.get("page") == "career_readiness":
-    divider()
-    section_heading("≡ƒÆ╝ Recommended Jobs Based on Your Skills")
+    st.divider()
+    render_section_title("💼 Recommended Jobs Based on Your Skills")
     for job in st.session_state["career_readiness_jobs"]:
         render_job_card(job, apply_key="apply_urls")
 # Navigation buttons
-divider()
+st.divider()
 col1, col2 = st.columns(2)
 with col1:
     if st.button("Back to Optimize", use_container_width=True, key="btn_cr_back"):

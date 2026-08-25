@@ -22,20 +22,12 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_page_header, render_circular_score
 )
 
 
-section_heading("Mini Mock Interview", "Answer each question as if in a real spoken interview.")
+render_page_header("Mini Mock Interview", "Answer each question as if in a real spoken interview.")
 if st.session_state["match_result"] is None:
     st.warning("Run a resume analysis first.")
     if st.button("Back", key="btn_back_no_mock"):
@@ -76,9 +68,9 @@ with col2:
             st.error(str(exc))
 evaluation = st.session_state["mock_interview_evaluation"]
 if evaluation:
-    divider()
+    st.divider()
     with st.container(border=True):
-        st.markdown(circular_score(evaluation.get("overall_readiness_score", 0), "Interview Readiness"), unsafe_allow_html=True)
+        render_circular_score(evaluation.get("overall_readiness_score", 0), "Interview Readiness")
     scores = st.columns(3)
     with scores[0]:
         st.metric("Communication", f"{evaluation.get('communication_score', '-')}%")

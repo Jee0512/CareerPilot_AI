@@ -22,20 +22,13 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_step_track, render_page_header,
+    render_section_title, render_badge_list, render_circular_score
 )
 
 
-section_heading("Personalized Placement Assessment")
+render_page_header("Personalized Placement Assessment")
 result = st.session_state["match_result"]
 if result is None:
     st.warning("Run a resume analysis first.")
@@ -44,7 +37,7 @@ if result is None:
 st.stop()
 effective_result = st.session_state["recalculated_match"] or result
 if effective_result["match_score"] < ELIGIBILITY_THRESHOLD:
-    status_banner(f"Your current score ({effective_result['match_score']}%) is below the {ELIGIBILITY_THRESHOLD}% threshold required for the assessment.", "bad")
+    st.error(f"Your current score ({effective_result['match_score']}%) is below the {ELIGIBILITY_THRESHOLD}% threshold required for the assessment.")
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Optimize Resume", type="primary", key="btn_to_optimize"):
@@ -80,18 +73,18 @@ st.stop()
 interview = st.session_state["interview"]
 answers = st.session_state["interview_answers"]
 # MCQ sections in cards
-for section_key, section_title_text, icon in [("aptitude", "Aptitude", "≡ƒº«"), ("verbal", "Verbal Ability", "≡ƒùú∩╕Å"), ("reasoning", "Logical Reasoning", "≡ƒº⌐")]:
+for section_key, section_title_text, icon in [("aptitude", "Aptitude", "🧠"), ("verbal", "Verbal Ability", "🗣️"), ("reasoning", "Logical Reasoning", "🧩")]:
     with st.container(border=True):
-        section_title(section_title_text, icon=icon)
+        render_section_title(f"{icon} {section_title_text}", size="1.25rem")
         for i, q in enumerate(interview.get(section_key, [])):
             answers[f"{section_key}_{i}"] = st.radio(f"Q{i + 1}. {q['question']}", q["options"], key=f"{section_key}_radio_{i}", index=None)
 # Technical
 with st.container(border=True):
-    section_title("Technical Questions")
+    render_section_title("Technical Questions")
     for i, q in enumerate(interview.get("technical", [])):
         answers[f"tech_{i}"] = st.text_area(f"Q{i + 1}. {q}", key=f"tech_answer_{i}")
     if interview.get("coding_question"):
-        section_heading("Coding Question")
+        render_section_title("Coding Question", size="1.1rem")
         st.code(interview["coding_question"], language=None)
         answers["coding"] = st.text_area("Your solution", key="coding_answer", height=180)
 st.session_state["interview_answers"] = answers
@@ -110,15 +103,17 @@ with col2:
             st.error(str(exc))
 evaluation = st.session_state["evaluation"]
 if evaluation:
-    divider()
+    st.divider()
     with st.container(border=True):
-        st.markdown(circular_score(evaluation.get("overall_score", 0), "Overall Score"), unsafe_allow_html=True)
-    status_class = 'good' if evaluation.get('readiness_level') in ('Ready', 'Highly Ready') else 'warn'
-    status_banner(f"Readiness Level: {evaluation.get('readiness_level', '-')}", status_class)
+        render_circular_score(evaluation.get("overall_score", 0), "Overall Score")
+    if evaluation.get('readiness_level') in ('Ready', 'Highly Ready'):
+        st.success(f"Readiness Level: {evaluation.get('readiness_level', '-')}")
+    else:
+        st.warning(f"Readiness Level: {evaluation.get('readiness_level', '-')}")
     with st.container(border=True):
         cat = evaluation.get("category_scores", {})
         cats = st.columns(5)
-        for col, (key, label) in zip(cats, [("aptitude", "≡ƒº« Aptitude"), ("verbal", "≡ƒùú∩╕Å Verbal"), ("reasoning", "≡ƒº⌐ Reasoning"), ("technical", "≡ƒ¢á∩╕Å Technical"), ("coding", "≡ƒÆ╗ Coding")]):
+        for col, (key, label) in zip(cats, [("aptitude", "🧠 Aptitude"), ("verbal", "🗣️ Verbal"), ("reasoning", "🧩 Reasoning"), ("technical", "🛠️ Technical"), ("coding", "💻 Coding")]):
             with col:
                 val = cat.get(key)
                 st.metric(label, f"{val}%" if val is not None else "N/A")

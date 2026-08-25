@@ -22,20 +22,12 @@ from modules.career_readiness import (
     generate_7day_learning_plan, generate_ai_mini_project,
     generate_improvement_summary, recommend_skill_based_jobs,
 )
-from modules.ui_components import (
-    inject_tailwind, render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
+from ui.components import (
+    render_page_header, render_section_title
 )
 
 
-section_heading("Career Toolkit")
+render_page_header("Career Toolkit")
 if st.session_state["match_result"] is None:
     st.warning("Run a resume analysis first.")
     if st.button("Back", key="btn_back_no_toolkit"):
@@ -43,7 +35,7 @@ if st.session_state["match_result"] is None:
 st.stop()
 # Outreach Email
 with st.container(border=True):
-    section_title("Professional Outreach Email")
+    render_section_title("Professional Outreach Email")
     if st.button("Generate Email", key="btn_gen_email"):
         try:
             with st.spinner("Drafting..."):
@@ -54,7 +46,7 @@ with st.container(border=True):
         st.text_area("Draft", st.session_state["outreach_email"], height=180, key="email_display")
 # Learning Roadmap
 with st.container(border=True):
-    section_title("Learning Roadmap")
+    render_section_title("Learning Roadmap")
     if st.button("Generate Roadmap", key="btn_gen_roadmap"):
         try:
             with st.spinner("Building roadmap..."):
@@ -65,7 +57,7 @@ with st.container(border=True):
         st.markdown(st.session_state["learning_roadmap"])
 # Bullet Rewrites
 with st.container(border=True):
-    section_title("Bullet Rewrite Suggestions")
+    render_section_title("Bullet Rewrite Suggestions")
     if st.button("Generate Rewrites", key="btn_gen_rewrites"):
         try:
             with st.spinner("Analyzing..."):
@@ -82,7 +74,7 @@ with st.container(border=True):
             st.markdown("---")
 # Download Report
 with st.container(border=True):
-    section_title("Download Report")
+    render_section_title("Download Report")
     report_md = build_report_markdown(st.session_state)
     st.download_button("Download Career Report (.md)", data=report_md, file_name="careerpilot_report.md", mime="text/markdown", key="btn_download_report")
 if st.button("Back", key="btn_back_toolkit"):

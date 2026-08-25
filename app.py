@@ -78,40 +78,11 @@ load_dotenv()
 
 
 
-st.set_page_config(page_title="CareerPilot AI", page_icon="≡ƒº¡", layout="wide")
-
-
-
-# ============================================================================
-
-# Load external CSS, Tailwind CDN & reusable UI components
-
-# ============================================================================
+st.set_page_config(page_title="CareerPilot AI", page_icon="🎓", layout="wide")
 
 from pathlib import Path
 
-from modules.ui_components import (
-
-    render_top_navbar, render_step_track, circular_score,
-    STEP_SEQUENCE, STEP_LABELS,
-    section_heading, section_title,
-    status_banner, privacy_note,
-    badge_list, labeled_badges,
-    metric_value, score_comparison,
-    render_job_card, compare_grid,
-    decision_card, success_gradient, mentor_card,
-    divider,
-
-)
-
-
-
 def get_custom_css():
-    # Load legacy CSS
-    legacy_css_path = Path(__file__).parent / "assets" / "style.css"
-    legacy_css = legacy_css_path.read_text(encoding="utf-8")
-    
-    # Load new design foundation CSS
     tokens_path = Path(__file__).parent / "styles" / "tokens.css"
     base_path = Path(__file__).parent / "styles" / "base.css"
     streamlit_path = Path(__file__).parent / "styles" / "streamlit.css"
@@ -122,13 +93,9 @@ def get_custom_css():
         streamlit_path.read_text(encoding="utf-8") if streamlit_path.exists() else ""
     ])
     
-    return legacy_css + "\n" + new_css
+    return new_css
 
 st.markdown(f"<style>{get_custom_css()}</style>", unsafe_allow_html=True)
-
-
-
-# ----------------------------------------------------------------------------
 
 # Session state initialization
 
@@ -192,18 +159,23 @@ for key, value in DEFAULT_STATE.items():
 # ============================================================================
 
 pages = {
-    "CareerPilot": [
-        st.Page("pages/landing.py", title="Home", default=True),
-        st.Page("pages/upload_resume.py", title="Upload Resume"),
-        st.Page("pages/job_description.py", title="Job Description"),
-        st.Page("pages/results.py", title="Results"),
-        st.Page("pages/resume_optimize.py", title="Optimize"),
-        st.Page("pages/career_readiness.py", title="Career Readiness"),
-        st.Page("pages/career_readiness_jobs.py", title="Recommended Jobs"),
-        st.Page("pages/interview.py", title="Assessment"),
-        st.Page("pages/mock_interview.py", title="Mock Interview"),
-        st.Page("pages/jobs.py", title="Find Jobs"),
-        st.Page("pages/toolkit.py", title="Career Toolkit"),
+    "Workspace": [
+        st.Page("pages/upload_resume.py", title="Home", default=True, icon="🏠"),
+        st.Page("pages/job_description.py", title="Target Job", icon="🎯"),
+        st.Page("pages/results.py", title="Match Results", icon="📊"),
+    ],
+    "Improve": [
+        st.Page("pages/resume_optimize.py", title="Optimize Resume", icon="✨"),
+        st.Page("pages/career_readiness.py", title="Career Readiness", icon="🎓"),
+    ],
+    "Practice": [
+        st.Page("pages/interview.py", title="Assessment", icon="📝"),
+        st.Page("pages/mock_interview.py", title="Mock Interview", icon="🎙️"),
+    ],
+    "Explore": [
+        st.Page("pages/jobs.py", title="Find Jobs", icon="💼"),
+        st.Page("pages/career_readiness_jobs.py", title="Skill-based Jobs", icon="🔍"),
+        st.Page("pages/toolkit.py", title="Career Toolkit", icon="🧰"),
     ]
 }
 
