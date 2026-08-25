@@ -10,8 +10,6 @@ that gives a more reliable score than either alone).
 """
 
 import streamlit as st
-from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
 
 from modules.resume_parser import extract_skills
 
@@ -19,11 +17,13 @@ from modules.resume_parser import extract_skills
 @st.cache_resource(show_spinner=False)
 def _load_embedding_model():
     """Small, fast, good-quality embedding model. Cached once per session."""
+    from sentence_transformers import SentenceTransformer
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 
 def _semantic_similarity(resume_text: str, jd_text: str) -> float:
     """Cosine similarity between resume and JD embeddings, as a 0-100 score."""
+    from sklearn.metrics.pairwise import cosine_similarity
     model = _load_embedding_model()
     embeddings = model.encode([resume_text, jd_text])
     score = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]

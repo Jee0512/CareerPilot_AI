@@ -1,0 +1,104 @@
+/* base.css - CareerPilot new design system classes */
+/* ALL UI components must be wrapped in .cp-ui namespace to avoid breaking legacy code */
+
+.cp-ui {
+    font-family: var(--cp-font-family);
+    color: var(--cp-color-text);
+}
+
+/* Typography Base */
+.cp-ui .cp-text-display {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--cp-color-text);
+    margin-bottom: var(--cp-space-lg);
+}
+
+.cp-ui .cp-text-h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--cp-color-text);
+    margin-bottom: var(--cp-space-md);
+}
+
+.cp-ui .cp-text-h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--cp-color-text);
+    margin-bottom: var(--cp-space-sm);
+}
+
+.cp-ui .cp-text-body {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--cp-color-text-secondary);
+}
+
+.cp-ui .cp-text-muted {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--cp-color-text-muted);
+}
+
+/* Layout Utilities */
+.cp-ui .cp-flex-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.cp-ui .cp-flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.cp-ui .cp-gap-sm { gap: var(--cp-space-sm); }
+.cp-ui .cp-gap-md { gap: var(--cp-space-md); }
+.cp-ui .cp-gap-lg { gap: var(--cp-space-lg); }
+
+/* Grid systems */
+.cp-ui .cp-grid-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--cp-space-xl);
+}
+
+/* Component Bases */
+.cp-ui .cp-card-base {
+    background-color: var(--cp-color-surface);
+    border: 1px solid var(--cp-color-border);
+    border-radius: var(--cp-radius-xl);
+    box-shadow: var(--cp-shadow-subtle);
+    padding: var(--cp-space-xl);
+    text-align: center;
+}
+
+.cp-ui .cp-badge-base {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--cp-radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    background-color: var(--cp-color-surface-muted);
+    color: var(--cp-color-text-secondary);
+    border: 1px solid var(--cp-color-border);
+}
+
+/* Animations */
+@keyframes cp-fade-in-up {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.cp-ui .cp-animate-in {
+    animation: cp-fade-in-up 0.5s ease-out forwards;
+}

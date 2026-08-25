@@ -1,0 +1,53 @@
+:root {
+    /* Color System - White/Light Premium */
+    --cp-color-background: #ffffff;
+    --cp-color-surface: #ffffff;
+    --cp-color-surface-muted: #f8fafc;
+    --cp-color-surface-inset: #f1f5f9;
+    
+    --cp-color-border: #e2e8f0;
+    --cp-color-border-strong: #cbd5e1;
+    
+    --cp-color-text: #0f172a;
+    --cp-color-text-secondary: #475569;
+    --cp-color-text-muted: #64748b;
+    
+    --cp-color-primary: #0f172a;
+    --cp-color-primary-hover: #1e293b;
+    --cp-color-primary-light: #f1f5f9;
+    
+    /* Semantic Colors */
+    --cp-color-success: #10b981;
+    --cp-color-success-bg: #d1fae5;
+    --cp-color-warning: #f59e0b;
+    --cp-color-warning-bg: #fef3c7;
+    --cp-color-danger: #ef4444;
+    --cp-color-danger-bg: #fee2e2;
+    --cp-color-info: #3b82f6;
+    --cp-color-info-bg: #dbeafe;
+
+    /* Spacing System */
+    --cp-space-xs: 0.25rem;
+    --cp-space-sm: 0.5rem;
+    --cp-space-md: 1rem;
+    --cp-space-lg: 1.5rem;
+    --cp-space-xl: 2rem;
+    --cp-space-2xl: 3rem;
+    --cp-space-3xl: 4rem;
+
+    /* Border Radius */
+    --cp-radius-sm: 4px;
+    --cp-radius-md: 8px;
+    --cp-radius-lg: 12px;
+    --cp-radius-xl: 16px;
+    --cp-radius-full: 9999px;
+
+    /* Shadow System */
+    --cp-shadow-none: none;
+    --cp-shadow-subtle: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --cp-shadow-medium: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+    --cp-shadow-large: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+
+    /* Typography */
+    --cp-font-family: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+}

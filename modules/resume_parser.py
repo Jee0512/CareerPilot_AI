@@ -9,7 +9,6 @@ tokenization/lemmatization.
 import io
 import re
 import fitz  # PyMuPDF
-import spacy
 import streamlit as st
 
 # A broad-but-finite skills vocabulary. Real products train/maintain a much
@@ -33,6 +32,7 @@ SKILLS_VOCAB = [
 @st.cache_resource(show_spinner=False)
 def _load_spacy_model():
     """Load spaCy once per session and cache it (model loading is slow)."""
+    import spacy
     try:
         return spacy.load("en_core_web_sm")
     except OSError:

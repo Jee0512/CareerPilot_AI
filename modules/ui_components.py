@@ -4,7 +4,7 @@ ui_components.py
 Reusable UI rendering helpers for the CareerPilot AI Streamlit app.
 
 Provides component functions that generate clean HTML using CSS classes
-from assets/style.css, eliminating inline styles from app.py.
+mapped directly to our `--cp-*` design tokens from assets/style.css.
 """
 
 import streamlit as st
@@ -20,28 +20,26 @@ STEP_LABELS = {
     "resume_optimize": "Optimize & Compare",
 }
 
-# ── Tailwind CDN (Play CDN for Streamlit — no build step needed) ─────────────
-TAILWIND_CDN = '<script src="https://cdn.tailwindcss.com"></script>'
-
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Layout Components
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def inject_tailwind():
-    """Inject Tailwind CSS v3 Play CDN into the Streamlit page."""
-    st.markdown(TAILWIND_CDN, unsafe_allow_html=True)
+    """No longer injecting Tailwind CDN due to Streamlit stripping script tags. 
+    Using native CSS structural classes."""
+    pass
 
 
 def render_top_navbar():
-    """Render the premium top navigation bar."""
-    st.markdown("""
-    <nav class="cp-navbar">
+    """Render the premium top navigation bar with bulletproof flex CSS."""
+    st.markdown('''
+    <div class="cp-navbar">
         <a class="cp-nav-logo" href="#">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="#2563EB"/>
+                <rect width="32" height="32" rx="8" fill="var(--cp-primary)"/>
                 <circle cx="16" cy="16" r="8" fill="white" opacity="0.9"/>
-                <path d="M16 10 L20 16 L16 22 L12 16 Z" fill="#2563EB"/>
+                <path d="M16 10 L20 16 L16 22 L12 16 Z" fill="var(--cp-primary)"/>
             </svg>
             Career<span>Pilot</span>
         </a>
@@ -49,15 +47,15 @@ def render_top_navbar():
             <a href="#" onclick="return false;">Home</a>
             <a href="#" onclick="return false;">Features</a>
             <a href="#" onclick="return false;">Dashboard</a>
-            <a href="#" onclick="return false;">Roadmap</a>
             <a href="#" onclick="return false;">Interview</a>
         </div>
         <div class="cp-nav-actions">
             <button class="cp-nav-btn">Login</button>
             <button class="cp-nav-btn cp-nav-btn-primary">Get Started</button>
         </div>
-    </nav>
-    """, unsafe_allow_html=True)
+    </div>
+    <hr style="margin-top:16px; margin-bottom:32px; border:none; border-top:1px solid var(--cp-border);">
+    ''', unsafe_allow_html=True)
 
 
 def render_step_track(current_page: str):
@@ -82,19 +80,19 @@ def render_step_track(current_page: str):
 
 def section_heading(title: str, subtitle: str = ""):
     """Render a page section heading with an optional subtitle."""
-    st.markdown(f'<h2 class="mb-2">{title}</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 class="cp-mb-4">{title}</h2>', unsafe_allow_html=True)
     if subtitle:
         st.markdown(
-            f'<p class="text-gray-500 mb-6">{subtitle}</p>',
+            f'<p class="cp-mb-4" style="color:var(--cp-text-secondary);">{subtitle}</p>',
             unsafe_allow_html=True,
         )
 
 
-def section_title(title: str, icon: str = "", size: str = "1rem"):
+def section_title(title: str, icon: str = "", size: str = "1.25rem"):
     """Render a smaller section title (h3) inside cards."""
     prefix = f"{icon} " if icon else ""
     st.markdown(
-        f'<h3 class="mb-3" style="font-size:{size};">{prefix}{title}</h3>',
+        f'<h3 class="cp-mb-4" style="font-size:{size};">{prefix}{title}</h3>',
         unsafe_allow_html=True,
     )
 
@@ -104,17 +102,12 @@ def section_title(title: str, icon: str = "", size: str = "1rem"):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def card_open(extra_classes: str = "", extra_style: str = ""):
-    """Open a card wrapper div. Must be paired with card_close()."""
-    style_attr = f' style="{extra_style}"' if extra_style else ""
-    st.markdown(
-        f'<div class="cp-card {extra_classes}"{style_attr}>',
-        unsafe_allow_html=True,
-    )
-
+    """Opens a .cp-card div. Must be paired with card_close()."""
+    st.markdown(f'<div class="cp-card {extra_classes}" style="{extra_style}">', unsafe_allow_html=True)
 
 def card_close():
-    """Close a card wrapper div."""
-    st.markdown("</div>", unsafe_allow_html=True)
+    """Closes a .cp-card div."""
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -122,14 +115,14 @@ def card_close():
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def status_banner(text: str, variant: str = "good"):
-    """Render a colored status banner. variant: 'good', 'bad', or 'warn'."""
+    """Render a colored status banner. variant: 'good', 'bad', 'warn', 'info'."""
     st.markdown(f'<div class="cp-status-{variant}">{text}</div>', unsafe_allow_html=True)
 
 
 def privacy_note(text: str = "&#128274; Your data is private and never stored permanently."):
     """Render a small centered privacy notice."""
     st.markdown(
-        f'<p class="text-center text-xs text-gray-400">{text}</p>',
+        f'<p style="text-align:center; font-size:0.8125rem; color:var(--cp-text-muted); margin-top:8px;">{text}</p>',
         unsafe_allow_html=True,
     )
 
@@ -147,11 +140,11 @@ def badge_list(items: list, variant: str = "good"):
 
 
 def labeled_badges(label: str, items: list, variant: str = "good"):
-    """Render a label followed by badges, e.g. '✅ Matched Skills: [Python] [SQL]'."""
+    """Render a label followed by badges."""
     if not items:
         return
     badges = " ".join(f'<span class="cp-badge cp-badge-{variant}">{item}</span>' for item in items)
-    st.markdown(f"**{label}** {badges}", unsafe_allow_html=True)
+    st.markdown(f"<strong style='color:var(--cp-text); margin-right:8px;'>{label}</strong> {badges}", unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -159,144 +152,155 @@ def labeled_badges(label: str, items: list, variant: str = "good"):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def circular_score(score: float, label: str = "", size: str = "150px") -> str:
-    """Return HTML for a circular score gauge. green >80, orange 60-80, red <60."""
+    """Return HTML for a circular score gauge."""
     deg = max(0, min(100, score)) * 3.6
     inner_size = f"calc({size} - 32px)"
     font_size = "2rem" if "150" in size else "1.5rem"
+    
     if score >= 80:
         ring_color = "var(--cp-success)"
     elif score >= 60:
         ring_color = "var(--cp-warning)"
     else:
         ring_color = "var(--cp-danger)"
+        
     return f"""
     <div class="cp-circular-wrapper">
       <div style="width:{size};height:{size};border-radius:50%;
           background:conic-gradient({ring_color} {deg}deg, var(--cp-border) 0deg);
           display:flex;align-items:center;justify-content:center;
-          transition:all 0.5s ease;">
-        <div style="width:{inner_size};height:{inner_size};border-radius:50%;background:#fff;
+          transition:all 0.5s ease; box-shadow:var(--cp-shadow-xs);">
+        <div style="width:{inner_size};height:{inner_size};border-radius:50%;
             display:flex;align-items:center;justify-content:center;
-            font-size:{font_size};font-weight:800;color:var(--cp-text);">
+            font-size:{font_size};font-weight:800; background:var(--cp-bg-card); color:var(--cp-text);">
           {score}%
         </div>
       </div>
-      <div class="cp-score-label">{label}</div>
+      <div style="margin-top:16px; font-size:0.8125rem; font-weight:700; color:var(--cp-text-secondary); text-transform:uppercase; letter-spacing:0.05em;">{label}</div>
     </div>
     """
 
 
 def metric_value(label: str, value: str, color: str = ""):
     """Render a single metric (label + big number)."""
-    color_style = f' style="color:{color};"' if color else ""
+    color_style = f'color:var(--cp-{color});' if color else 'color:var(--cp-text);'
     st.markdown(
         f'<div class="cp-metric">'
+        f'<div class="cp-metric-value" style="{color_style}">{value}</div>'
         f'<div class="cp-metric-label">{label}</div>'
-        f'<div class="cp-metric-value"{color_style}>{value}</div>'
         f'</div>',
         unsafe_allow_html=True,
     )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Job Card (DRY — used in 3 pages)
+# Domain-Specific Cards
 # ═══════════════════════════════════════════════════════════════════════════════
-
-def render_job_card(job: dict, apply_key: str = "apply_links"):
-    """Render a single job recommendation card. Eliminates the 3x duplication."""
-    card_open()
-    title = job.get("job_title", "Role")
-    company = job.get("company", "")
-    title_display = f"{title} at {company}" if company else title
-    section_title(title_display, size="1.1rem")
-    st.markdown(f"**Estimated Match:** {job.get('estimated_match_pct', '-')}%")
-    st.progress(min(1.0, (job.get("estimated_match_pct") or 0) / 100))
-    st.caption(job.get("reason", ""))
-    badge_list(job.get("skills_present", []), "good")
-    badge_list(job.get("skills_missing", []), "bad")
-    urls = job.get(apply_key, job.get("apply_urls", {}))
-    for site in ("LinkedIn", "Indeed", "Naukri", "Company Careers"):
-        if site in urls:
-            st.link_button(f"Apply on {site}", urls[site], use_container_width=True)
-    card_close()
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Comparison / Diff Components
-# ═══════════════════════════════════════════════════════════════════════════════
-
-def compare_grid(original_html: str, optimized_html: str,
-                 original_label: str = "Original &#10060;",
-                 optimized_label: str = "Optimized &#9989;"):
-    """Render a two-panel before/after comparison grid."""
-    st.markdown(f"""
-    <div class="cp-compare-grid">
-        <div class="cp-compare-original">
-            <div class="cp-compare-label">{original_label}</div>
-            <div class="text-sm leading-relaxed">{original_html}</div>
-        </div>
-        <div class="cp-compare-optimized">
-            <div class="cp-compare-label">{optimized_label}</div>
-            <div class="text-sm leading-relaxed">{optimized_html}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
 
 def score_comparison(prev_score: float, new_score: float):
-    """Render a 3-column score comparison (Previous → New → Improvement)."""
-    improvement = round(new_score - prev_score, 1)
-    sign = "+" if improvement >= 0 else ""
-    sc1, sc2, sc3 = st.columns(3)
-    with sc1:
-        metric_value("Previous Score", f"{prev_score}%", "var(--cp-danger)")
-    with sc2:
-        metric_value("Optimized Score", f"{new_score}%", "var(--cp-success)")
-    with sc3:
-        color = "var(--cp-success)" if improvement >= 0 else "var(--cp-danger)"
-        metric_value("Improvement", f"{sign}{improvement}%", color)
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# Decision Cards (Career Readiness)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-def decision_card(icon: str, title: str, description: str, bg_color: str = "#EEF4FF",
-                  animation: str = "cp-animate-in"):
-    """Render a decision card with icon circle, title, and description."""
-    st.markdown(f"""
-    <div class="cp-decision-card {animation}">
-        <div class="cp-icon-circle" style="background:{bg_color};">
-            {icon}
+    """Render a 3-column layout comparing previous score and new score."""
+    diff = new_score - prev_score
+    diff_sign = "+" if diff > 0 else ""
+    diff_color = "success" if diff > 0 else "danger" if diff < 0 else "text-secondary"
+    
+    html = f'''
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; text-align:center; padding:24px; background:var(--cp-bg); border:1px solid var(--cp-border); border-radius:var(--cp-radius-md); margin-bottom:24px;">
+        <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cp-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Original Score</div>
+            <div style="font-size:1.5rem; font-weight:800; color:var(--cp-text);">{prev_score:.0f}%</div>
         </div>
-        <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">{title}</h3>
-        <p class="text-gray-500 text-sm mb-5">{description}</p>
+        <div style="border-left:1px solid var(--cp-border); border-right:1px solid var(--cp-border);">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cp-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Optimized Score</div>
+            <div style="font-size:1.5rem; font-weight:800; color:var(--cp-primary);">{new_score:.0f}%</div>
+        </div>
+        <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cp-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Improvement</div>
+            <div style="font-size:1.5rem; font-weight:800; color:var(--cp-{diff_color});">{diff_sign}{diff:.0f}%</div>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
+    '''
+    st.markdown(html, unsafe_allow_html=True)
+
+
+def render_job_card(job: dict, apply_key: str = "apply_links"):
+    """Render a recommended job card using a single HTML string."""
+    present = job.get("skills_present", [])
+    missing = job.get("skills_missing", [])
+    
+    present_html = " ".join(f'<span class="cp-badge cp-badge-good">{s}</span>' for s in present) if present else ""
+    missing_html = " ".join(f'<span class="cp-badge cp-badge-bad">{s}</span>' for s in missing) if missing else ""
+    
+    html = f'''
+    <div class="cp-card">
+        <h3 style="font-size:1.125rem; margin-bottom:4px;">{job.get("title", "Job Title")}</h3>
+        <p class="cp-text-primary" style="font-size:0.875rem; font-weight:500; margin-bottom:16px;">{job.get("company", "Company")}</p>
+        <p style="font-size:0.75rem; font-weight:700; color:var(--cp-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Required Skills</p>
+        {present_html}
+        {missing_html}
+        <div style="flex-grow:1;"></div>
+        <div class="cp-flex-between cp-mt-4" style="border-top:1px solid var(--cp-border); padding-top:16px;">
+            <span style="font-size:0.8125rem; font-weight:500; color:var(--cp-text-muted);">Match Score:</span>
+            <span style="font-weight:700; color:var(--cp-text);">{job.get("match_score", 0)}%</span>
+        </div>
+    </div>
+    '''
+    st.markdown(html, unsafe_allow_html=True)
+
+
+def compare_grid(left_html: str, right_html: str):
+    """Render a two-column CSS grid for comparisons."""
+    html = f'''
+    <div class="cp-compare-grid">
+        <div class="cp-compare-original">
+            <div class="cp-compare-label">Original Content (Red = Removed)</div>
+            <div style="font-size:0.875rem;line-height:1.6;">{left_html}</div>
+        </div>
+        <div class="cp-compare-optimized">
+            <div class="cp-compare-label">Optimized Content (Green = Added)</div>
+            <div style="font-size:0.875rem;line-height:1.6;">{right_html}</div>
+        </div>
+    </div>
+    '''
+    st.markdown(html, unsafe_allow_html=True)
+
+
+def decision_card(icon: str, title: str, description: str, bg_color: str, animation: str):
+    """Render a card for career decisions."""
+    # bg_color is ignored in favor of design system
+    st.markdown(
+        f'<div class="cp-decision-card {animation}">'
+        f'<div class="cp-icon-circle" style="background:var(--cp-primary-light); color:var(--cp-primary);">{icon}</div>'
+        f'<h3 style="font-size:1.125rem; margin-bottom:8px;">{title}</h3>'
+        f'<p style="font-size:0.875rem; color:var(--cp-text-secondary);">{description}</p>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
 
 
 def success_gradient(emoji: str, title: str, message: str):
-    """Render a green success gradient card."""
-    st.markdown(f"""
-    <div class="cp-success-gradient cp-animate-in">
-        <div class="text-5xl mb-3">{emoji}</div>
-        <h3 class="mb-2" style="color:var(--cp-success-text);">{title}</h3>
-        <p style="color:#047857;font-size:1rem;max-width:600px;margin:0 auto;">{message}</p>
-    </div>
-    """, unsafe_allow_html=True)
+    """Render text with a success gradient."""
+    st.markdown(
+        f'<div class="cp-success-gradient">'
+        f'<div style="font-size:2.5rem; margin-bottom:12px;">{emoji}</div>'
+        f'<h2 style="color:#065F46; margin-bottom:8px;">{title}</h2>'
+        f'<p style="color:#047857; font-weight:500;">{message}</p>'
+        f'</div>', 
+        unsafe_allow_html=True
+    )
 
 
 def mentor_card(emoji: str, title: str, message: str):
-    """Render a blue mentor guidance card."""
-    st.markdown(f"""
-    <div class="cp-mentor-card cp-animate-in">
-        <div class="text-5xl mb-3">{emoji}</div>
-        <h3 class="mb-2" style="color:var(--cp-info-text);">{title}</h3>
-        <p style="color:#3B82F6;font-size:0.95rem;max-width:650px;margin:0 auto;">{message}</p>
-    </div>
-    """, unsafe_allow_html=True)
+    """Render an AI Mentor tip card."""
+    st.markdown(
+        f'<div class="cp-mentor-card">'
+        f'<div style="font-size:2.5rem; margin-bottom:12px;">{emoji}</div>'
+        f'<h2 style="color:#1E3A8A; margin-bottom:8px;">{title}</h2>'
+        f'<p style="color:#1E40AF; font-weight:500;">{message}</p>'
+        f'</div>', 
+        unsafe_allow_html=True
+    )
 
 
 def divider():
-    """Render a horizontal rule divider."""
-    st.markdown("<hr>", unsafe_allow_html=True)
+    """Render a standard divider line."""
+    st.markdown('<hr>', unsafe_allow_html=True)
